@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -62,13 +61,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         locationUpdateRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (gps) {
-                        updateLocation();
-                        handler.postDelayed(this, 10000);
-                    }
+            @Override
+            public void run() {
+                if (gps) {
+                    updateLocation();
+                    handler.postDelayed(this, 10000);
                 }
+            }
         };
 
     }
@@ -92,16 +91,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void updateLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    1001);
+
             return;
         }
+
 
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -142,25 +142,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     }
                 });
+    }
+
+    private void plotPinFromInput(){
+        EditText latitudeInput = findViewById(R.id.latitude_input);
+        EditText longitudeInput = findViewById(R.id.longitude_input);
+
+        try{
+            double latitude = Double.parseDouble(latitudeInput.getText().toString());
+            double longitude = Double.parseDouble(longitudeInput.getText().toString());
+
+            LatLng pinLocation = new LatLng(latitude, longitude);
+            mMap.clear();
+            mMap.addMarker(new MarkerOptions().position(pinLocation).title("wybrana lokalizacja"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pinLocation, 15));
+
+        }catch(NumberFormatException e){
+            Toast.makeText(this, "wprowadz prawidlowe dane", Toast.LENGTH_SHORT).show();
         }
-
-        private void plotPinFromInput(){
-            EditText latitudeInput = findViewById(R.id.latitude_input);
-            EditText longitudeInput = findViewById(R.id.longitude_input);
-
-            try{
-                double latitude = Double.parseDouble(latitudeInput.getText().toString());
-                double longitude = Double.parseDouble(longitudeInput.getText().toString());
-
-                LatLng pinLocation = new LatLng(latitude, longitude);
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(pinLocation).title("wybrana lokalizacja"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pinLocation, 15));
-
-            }catch(NumberFormatException e){
-                Toast.makeText(this, "wprowadz prawidlowe dane", Toast.LENGTH_SHORT).show();
-            }
-        }
+    }
 
 }
-
