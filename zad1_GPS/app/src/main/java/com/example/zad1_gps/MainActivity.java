@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FusedLocationProviderClient fusedLocationClient;
     private LatLng location1;
     private LatLng location2;
-    private float lastAccuracy = -1;
     private boolean gps = true;
 
     @Override
